@@ -1,5 +1,4 @@
 from datetime import datetime
-from time import sleep
 
 import urllib3
 import xmltodict
@@ -8,7 +7,8 @@ import json
 
 DATA_SOURCE = ['https://www.haaretz.com/srv/haaretz-latest-headlines',
                'https://www.israelhayom.co.il/rss.xml']
-DATA_PATH = "C:/Users/Ofer Ezrachi/Documents/Python Scripts/News_title_classification/data/dataset.json"
+DATA_PATH = "C:/Users/Ofer Ezrachi/Documents/Python Scripts/" \
+            "News_title_classification/data/dataset.json"
 
 
 def probe_website(url: str, classification: int) -> Dict[str, int]:
@@ -33,14 +33,14 @@ def probe_website(url: str, classification: int) -> Dict[str, int]:
     return {item['title']: classification for item in data}
 
 
-def dump_to_file(data: Dict[str, int], path)->None:
+def dump_to_file(data: Dict[str, int], path) -> None:
     """
     This function will dump the data to file as json
     :param data: data to dump
     :param path: path to dump to
     """
     with open(path, "w", encoding='utf8') as file:
-        json.dump(data, file, ensure_ascii=False,indent=2)
+        json.dump(data, file, ensure_ascii=False, indent=2)
 
 
 def read_dump(path: str) -> Dict[str, int]:
