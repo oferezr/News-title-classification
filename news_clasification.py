@@ -3,7 +3,7 @@ from datetime import datetime
 from time import sleep
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from sklearn.naive_bayes import MultinomialNB
-from sklearn.linear_model import  SGDClassifier
+from sklearn.linear_model import SGDClassifier
 import urllib3
 import xmltodict
 from typing import Dict, Tuple
@@ -11,7 +11,7 @@ import json
 import numpy as np
 
 # I choose to work with the heberow websites and not the English ons since
-# IsaelHayom.com doenst work good with RSS
+# IsraelHayom.com doesn't work good with RSS
 DATA_SOURCE = {'https://www.haaretz.co.il/srv/htz---all-articles': 0,
                # 'https://www.haaretz.com/srv/haaretz-latest-headlines': 0,
                # 'https://www.israelhayom.com/category/news/feed/':1,
@@ -66,7 +66,8 @@ def read_dump(path: str) -> Dict[str, int]:
 def update_dataset(path: str, resources: Dict[str, int]) -> None:
     """
     This function will update the dataset with last titles from the web
-    :param resources: The webs resources for the dataset and their classifications
+    :param resources: The webs resources for the dataset and their
+    classifications
     :param path: The path to the dataset file
     """
     data = read_dump(path)
@@ -89,7 +90,7 @@ def read_data(path: str) -> np.array:
 
 
 def split_train_test(dataset: np.array, percentage: float = 0.8) -> Tuple[
-    np.array, np.array, np.array, np.array]:
+        np.array, np.array, np.array, np.array]:
     """
     This function will get dataset and will shuffle it and return split of
     the dataset to train and test according to the given percentage
@@ -101,13 +102,13 @@ def split_train_test(dataset: np.array, percentage: float = 0.8) -> Tuple[
     splitter = int(dataset.shape[0] * percentage)
     training, test = dataset[:splitter], dataset[splitter:]
     return training[:, 0], training[:, 1].astype(int), \
-           test[:, 0], test[:, 1].astype(int)
+            test[:, 0], test[:, 1].astype(int)
 
 
 def check_model_succses(X_train, y_train, baseModel, X_test, y_test):
     model = baseModel.fit(X_train, y_train)
     predicted = model.predict(X_test)
-    return np.mean(predicted==y_test)
+    return np.mean(predicted == y_test)
 
 
 def choose_model():
@@ -118,7 +119,10 @@ def choose_model():
     X_test_counts = count_vect.transform(X_test)
     X_train_tfidf = tfidf_transformer.fit_transform(X_train_counts)
     X_test_tfidf = tfidf_transformer.transform(X_test_counts)
-    print(check_model_succses(X_train_tfidf, y_train,SGDClassifier(loss='hinge', penalty='l2', alpha=1e-3, random_state=42) , X_test_tfidf, y_test))
+    print(check_model_succses(X_train_tfidf, y_train,
+                              SGDClassifier(loss='hinge', penalty='l2',
+                                            alpha=1e-3, random_state=42),
+                              X_test_tfidf, y_test))
     x = 0
 
 
