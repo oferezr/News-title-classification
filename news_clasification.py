@@ -10,7 +10,7 @@ from typing import Dict, Tuple
 import json
 import numpy as np
 
-# I choose to work with the heberow websites and not the English ons since
+# I choose to work with the hebrew websites and not the English ons since
 # IsraelHayom.com doesn't work good with RSS
 DATA_SOURCE = {'https://www.haaretz.co.il/srv/htz---all-articles': 0,
                # 'https://www.haaretz.com/srv/haaretz-latest-headlines': 0,
@@ -90,7 +90,7 @@ def read_data(path: str) -> np.array:
 
 
 def split_train_test(dataset: np.array, percentage: float = 0.8) -> Tuple[
-        np.array, np.array, np.array, np.array]:
+    np.array, np.array, np.array, np.array]:
     """
     This function will get dataset and will shuffle it and return split of
     the dataset to train and test according to the given percentage
@@ -98,11 +98,11 @@ def split_train_test(dataset: np.array, percentage: float = 0.8) -> Tuple[
     :param dataset: the data to split
     :return: the dataset split to train and test
     """
-    np.random.shuffle(dataset)
+    #np.random.shuffle(dataset)
     splitter = int(dataset.shape[0] * percentage)
     training, test = dataset[:splitter], dataset[splitter:]
     return training[:, 0], training[:, 1].astype(int), \
-            test[:, 0], test[:, 1].astype(int)
+           test[:, 0], test[:, 1].astype(int)
 
 
 def check_model_succses(X_train, y_train, baseModel, X_test, y_test):
@@ -114,7 +114,7 @@ def check_model_succses(X_train, y_train, baseModel, X_test, y_test):
 def choose_model():
     count_vect, tfidf_transformer = CountVectorizer(), TfidfTransformer()
     dataset = read_data(DATA_PATH).T
-    X_train, y_train, X_test, y_test = split_train_test(dataset, 0.8)
+    X_train, y_train, X_test, y_test = split_train_test(dataset, 0.9)
     X_train_counts = count_vect.fit_transform(X_train)
     X_test_counts = count_vect.transform(X_test)
     X_train_tfidf = tfidf_transformer.fit_transform(X_train_counts)
@@ -122,6 +122,7 @@ def choose_model():
     print(check_model_succses(X_train_tfidf, y_train,
                               SGDClassifier(loss='hinge', penalty='l2',
                                             alpha=1e-3, random_state=42),
+                              # MultinomialNB(),
                               X_test_tfidf, y_test))
     x = 0
 
@@ -129,9 +130,9 @@ def choose_model():
 if __name__ == '__main__':
     # website_example()
     if len(sys.argv) > 1 and sys.argv[1] == 'update':
-        while True:
-            update_dataset(DATA_PATH, DATA_SOURCE)
-            print(f"waiting for {UPDATE_INTERVAL / 60} minuets.")
-            sleep(UPDATE_INTERVAL)
+        # while True:
+        update_dataset(DATA_PATH, DATA_SOURCE)
+        # print(f"waiting for {UPDATE_INTERVAL / 60} minuets.")
+        # sleep(UPDATE_INTERVAL)
     else:
         choose_model()
