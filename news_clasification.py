@@ -1,8 +1,11 @@
 import sys
 from datetime import datetime
+
+from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from sklearn.model_selection import train_test_split
-from sklearn.naive_bayes import MultinomialNB
+from sklearn.naive_bayes import MultinomialNB,GaussianNB
 from sklearn.linear_model import SGDClassifier
 import urllib3
 import xmltodict
@@ -12,6 +15,10 @@ import numpy as np
 
 # I choose to work with the hebrew websites and not the English ons since
 # IsraelHayom.com doesn't work good with RSS
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.svm import SVC
+from sklearn.tree import DecisionTreeClassifier
+
 DATA_SOURCE = {'https://www.haaretz.co.il/srv/htz---all-articles': 0,
                # 'https://www.haaretz.com/srv/haaretz-latest-headlines': 0,
                # 'https://www.israelhayom.com/category/news/feed/':1,
@@ -110,6 +117,13 @@ def choose_model():
                               SGDClassifier(loss='hinge', penalty='l2',
                                             alpha=1e-3, random_state=42),
                               # MultinomialNB(),
+                              # DecisionTreeClassifier(max_depth=5),
+                              # KNeighborsClassifier(1),
+                              # RandomForestClassifier(max_depth=5,
+                              #                        n_estimators=10,
+                              #                        max_features=1),
+                              # SVC(kernel="linear", C=0.025),
+                              # SVC(gamma=2, C=1),
                               X_test_tfidf, y_test))
 
 
