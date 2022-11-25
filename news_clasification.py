@@ -1,5 +1,6 @@
 import sys
 from datetime import datetime
+
 import pickle
 from sklearn.base import BaseEstimator
 from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
@@ -34,6 +35,7 @@ MODELS = [("DecisionTreeClassifier", lambda x: DecisionTreeClassifier(max_depth=
           ("AdaBoostClassifier", lambda x: AdaBoostClassifier(), [0]),
           ("MultinomialNB", lambda x: MultinomialNB(), [0]),
           ("SVC", lambda x: SVC(gamma=x, C=1), range(1, 8))]
+
 
 
 def probe_website(url: str, classification: int) -> Dict[str, int]:
@@ -74,6 +76,7 @@ def read_dump(path: str) -> Dict[str, int]:
     :param path: the path of the json file
     :return: Dictionary of the titles to their classifications
     """
+
     try:
         with open(path, encoding='utf8') as file:
             return json.load(file)
