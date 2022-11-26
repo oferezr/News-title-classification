@@ -8,14 +8,16 @@ from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.model_selection import cross_val_score
 from sklearn.linear_model import SGDClassifier
+from sklearn.feature_selection import SelectKBest
+from sklearn.feature_selection import chi2
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.svm import SVC
+from sklearn.tree import DecisionTreeClassifier
 import urllib3
 import xmltodict
 from typing import Dict, List, Tuple
 import json
 import numpy as np
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.svm import SVC
-from sklearn.tree import DecisionTreeClassifier
 
 # I choose to work with the hebrew websites and not the English ons since
 # IsraelHayom.com doesn't work good with RSS
@@ -23,7 +25,7 @@ from sklearn.tree import DecisionTreeClassifier
 DATA_SOURCE = {'https://www.haaretz.co.il/srv/htz---all-articles': 0,
                'https://www.israelhayom.co.il/rss.xml': 1}
 CLASSIFICATIONS = ['Haaretz', 'IsraelHayom']
-DATA_PATH = "C:/HUJI/News_title_clasification/News_title_classification/data"
+DATA_PATH = "./data"
 UPDATE_INTERVAL = 1800
 MODELS = [("DecisionTreeClassifier", lambda x: DecisionTreeClassifier(max_depth=x), range(1, 10)),
           ("RandomForestClassifier", lambda x: RandomForestClassifier(max_depth=x, n_estimators=10), range(1, 10)),
@@ -121,11 +123,11 @@ def preprocessing(data: np.array, count_vect: CountVectorizer, tfidf_transformer
     # split to test and train
     X_train, X_test, y_train, y_test = train_test_split(dataset[:, 0], dataset[:, 1],
                                                         test_size=0.1, shuffle=False)
-    X_train_counts = count_vect.fit_transform(X_train)
-    X_test_counts = count_vect.transform(X_test)
-    X_train_tfidf = tfidf_transformer.fit_transform(X_train_counts)
-    X_test_tfidf = tfidf_transformer.transform(X_test_counts)
-    return X_test_tfidf, X_train_tfidf, y_test, y_train
+    X_train = count_vect.fit_transform(X_train)
+    X_test = count_vect.transform(X_test)
+    X_train = tfidf_transformer.fit_transform(X_train)
+    X_test = tfidf_transformer.transform(X_test)
+    return X_test, X_train, y_test, y_train
 
 
 def find_hyper(X_train: np.array, y_train: np.array, model_init, hypers: List[float]) -> float:
