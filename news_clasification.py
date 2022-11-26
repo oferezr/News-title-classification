@@ -9,14 +9,14 @@ from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.model_selection import cross_val_score
 from sklearn.linear_model import SGDClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.svm import SVC
+from sklearn.tree import DecisionTreeClassifier
 import urllib3
 import xmltodict
 from typing import Dict, List, Tuple
 import json
 import numpy as np
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.svm import SVC
-from sklearn.tree import DecisionTreeClassifier
 
 # I choose to work with the hebrew websites and not the English ons since
 # IsraelHayom.com doesn't work good with RSS
@@ -24,7 +24,7 @@ from sklearn.tree import DecisionTreeClassifier
 DATA_SOURCE = {'https://www.haaretz.co.il/srv/htz---all-articles': 0,
                'https://www.israelhayom.co.il/rss.xml': 1}
 CLASSIFICATIONS = ['Haaretz', 'IsraelHayom']
-DATA_PATH = "C:/HUJI/News_title_clasification/News_title_classification/data"
+DATA_PATH = "./data"
 UPDATE_INTERVAL = 1800
 MODELS = [("DecisionTreeClassifier", lambda x: DecisionTreeClassifier(max_depth=x), range(1, 10)),
           ("RandomForestClassifier", lambda x: RandomForestClassifier(max_depth=x, n_estimators=10), range(1, 10)),
@@ -124,11 +124,12 @@ def preprocessing(data: np.array, count_vect: CountVectorizer, tfidf_transformer
     # split to test and train
     X_train, X_test, y_train, y_test = train_test_split(dataset[:, 0], dataset[:, 1],
                                                         test_size=0.1, shuffle=False)
-    X_train_counts = count_vect.fit_transform(X_train)
-    X_test_counts = count_vect.transform(X_test)
-    X_train_tfidf = tfidf_transformer.fit_transform(X_train_counts)
-    X_test_tfidf = tfidf_transformer.transform(X_test_counts)
-    return X_test_tfidf, X_train_tfidf, y_test, y_train
+    # Transform the text headline to matrix in order to apply ml algorithms
+    X_train = count_vect.fit_transform(X_train)
+    X_test = count_vect.transform(X_test)
+    X_train = tfidf_transformer.fit_transform(X_train)
+    X_test = tfidf_transformer.transform(X_test)
+    return X_test, X_train, y_test, y_train
 
 
 def find_hyper(X_train: np.array, y_train: np.array, model_init, hypers: List[float]) -> float:
@@ -161,13 +162,17 @@ def model_selection(X_test: np.array, X_train: np.array, y_test: np.array, y_tra
     best_model = None
     best_model_name = ""
     for name, model, hypers in MODELS:
+        # Find the best hyperparameter
         p = find_hyper(X_train, y_train, model, hypers)
+        # Fit the model on all the training dataset
         m = model(p)
         m.fit(X_train, y_train)
+        # Predict and evaluate the score of the fitted model on the test and train sets
         train_predicted = m.predict(X_train)
         test_predicted = m.predict(X_test)
         test_score = np.mean(y_test == test_predicted)
         train_score = np.mean(y_train == train_predicted)
+        # Take the better model
         if test_score > best_score:
             best_score, best_model, best_model_name = test_score, m, name
         print(f"{name}- Test score: {round(test_score * 100, 2)}%, Train score:"
