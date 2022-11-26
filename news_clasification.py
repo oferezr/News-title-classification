@@ -8,8 +8,6 @@ from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.model_selection import cross_val_score
 from sklearn.linear_model import SGDClassifier
-from sklearn.feature_selection import SelectKBest
-from sklearn.feature_selection import chi2
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
@@ -123,6 +121,7 @@ def preprocessing(data: np.array, count_vect: CountVectorizer, tfidf_transformer
     # split to test and train
     X_train, X_test, y_train, y_test = train_test_split(dataset[:, 0], dataset[:, 1],
                                                         test_size=0.1, shuffle=False)
+    # Transform the text headline to matrix in order to apply ml algorithms
     X_train = count_vect.fit_transform(X_train)
     X_test = count_vect.transform(X_test)
     X_train = tfidf_transformer.fit_transform(X_train)
@@ -160,13 +159,17 @@ def model_selection(X_test: np.array, X_train: np.array, y_test: np.array, y_tra
     best_model = None
     best_model_name = ""
     for name, model, hypers in MODELS:
+        # Find the best hyperparameter
         p = find_hyper(X_train, y_train, model, hypers)
+        # Fit the model on all the training dataset
         m = model(p)
         m.fit(X_train, y_train)
+        # Predict and evaluate the score of the fitted model on the test and train sets
         train_predicted = m.predict(X_train)
         test_predicted = m.predict(X_test)
         test_score = np.mean(y_test == test_predicted)
         train_score = np.mean(y_train == train_predicted)
+        # Take the better model
         if test_score > best_score:
             best_score, best_model, best_model_name = test_score, m, name
         print(f"{name}- Test score: {round(test_score * 100, 2)}%, Train score:"

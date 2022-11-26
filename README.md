@@ -41,7 +41,7 @@ For each hyperparameter I run the cross validation method, and then I take the m
 evaluate the hyperparameter in the mean case.
 After choosing each model its best hyperparameter, I'm training the model again on all the training dataset and 
 calculate the score of the model under the test dataset (that I saved earlier in the preprocessing stage).
-In order to avoid overfitting, I choose the model that has the highest score over the test dataset and not the train 
+In order to avoid over fitting, I choose the model that has the highest score over the test dataset and not the train 
 set.
 I'm saving the model using pickle library to allow fast predictions in the future without training the model all 
 over again.
