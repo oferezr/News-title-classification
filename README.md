@@ -3,7 +3,7 @@
 In this project I digg into the headlines of IsraelHayom Hebrew website and
 Haaretz Hebrew website. I will try to build machine learning model that when given a headline
 from one of the two, it will classify it to it's source with high probability.
-Hopefully, at list 85%.
+Hopefully, at list 80%.
 
 # Data probe
 First I tried to search for resources, since I wanted to get as match samples as I can.
@@ -14,7 +14,7 @@ Now, the website prob function can get a normal RSS page and get the data from t
 
 Secondly, I wanted to get all the data from beginning of my work till handout of the script.
 So I wrote a batch file that I set the Windows Task scheduler to run at each hour.
-Now I have around 1,200 sample from both newspapers.
+Now I have more than 1,000 samples from both newspapers.
 I'm saving the sample as json file with the classification (0 for Haaretz and 1 for IsraelHayom).
 
 # Preprocessing
